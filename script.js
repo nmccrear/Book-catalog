@@ -200,12 +200,12 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault(); // Prevent form from reloading the page
 
         const bookData = {
-            title: escapeHTML(document.getElementById('title').value),
-            author: escapeHTML(document.getElementById('author').value),
-            isbn: escapeHTML(document.getElementById('isbn').value),
-            genre: escapeHTML(document.getElementById('genre').value),
-            description: escapeHTML(document.getElementById('description').value),
-            cover: escapeHTML(document.getElementById('cover').value),
+            title: (document.getElementById('title').value),
+            author: (document.getElementById('author').value),
+            isbn: (document.getElementById('isbn').value),
+            genre: (document.getElementById('genre').value),
+            description: (document.getElementById('description').value),
+            cover: (document.getElementById('cover').value),
             read: document.getElementById('read-checkbox').checked
         };
 
