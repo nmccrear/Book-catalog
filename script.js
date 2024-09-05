@@ -16,15 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let books = [];
     let editingBookIndex = null; // Track if adding or editing a book
 
-    // Function to escape user inputs to prevent XSS
-    function escapeHTML(str) {
-        return str.replace(/&/g, '&amp;')
-                  .replace(/</g, '&lt;')
-                  .replace(/>/g, '&gt;')
-                  .replace(/"/g, '&quot;')
-                  .replace(/'/g, '&#039;');
-    }
-
     // Firebase configuration (replace with your actual Firebase config)
     var firebaseConfig = {
         apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
