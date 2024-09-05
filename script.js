@@ -259,4 +259,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial load of books from Firestore
     loadBooks();
-});
+);
