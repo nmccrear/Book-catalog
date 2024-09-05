@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBookBtn = document.getElementById('add-book-btn');
     const closeModal = document.querySelector('.close');
     const form = document.getElementById('book-form');
-    const deleteBtn = document.getElementById('delete-book-btn');
+    const deleteBtn = document.getElementById('delete-book-btn'); // Add a reference to the delete button
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     let books = [];
-    let editingBookIndex = null; // Ensure this is properly initialized
+    let editingBookIndex = null; // Used to track if editing or adding a new book
 
         // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
         var firebaseConfig = {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Initialize Firestore
         var db = firebase.firestore();
     
-    // Function to load books from Firestore
+    /// Function to load books from Firestore
     function loadBooks() {
         db.collection("books").get().then((querySnapshot) => {
             books = [];
@@ -40,27 +40,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to save a book to Firestore
     function saveBookToFirestore(book) {
-        return db.collection("books").add(book).then((docRef) => {
-            console.log("Document written with ID: ", docRef.id);
-        }).catch((error) => {
-            console.error("Error adding book: ", error);
-        });
+        return db.collection("books").add(book);
     }
 
     // Function to update a book in Firestore
     function updateBookInFirestore(id, updatedBook) {
-        return db.collection("books").doc(id).update(updatedBook).then(() => {
-            console.log("Document successfully updated!");
-        }).catch((error) => {
-            console.error("Error updating book: ", error);
-        });
+        return db.collection("books").doc(id).update(updatedBook);
     }
 
     // Function to delete a book from Firestore
     function deleteBookFromFirestore(id) {
         return db.collection("books").doc(id).delete();
     }
-    
+
     // Function to display books
     function displayBooks(filteredBooks = []) {
         bookList.innerHTML = ''; // Clear the list
@@ -82,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <p><strong>Genre:</strong> ${book.genre}</p>
                         <p><strong>Description:</strong> ${book.description}</p>
                         <p><strong>ISBN:</strong> ${book.isbn}</p>
+                        ${book.read ? '<p><strong>Status:</strong> Read</p>' : ''} <!-- Display "Read" if book has been marked as read -->
                         <button class="edit-book-btn" data-index="${index}">Edit</button>
                     </div>
                 `;
@@ -108,8 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('genre').value = book.genre;
         document.getElementById('description').value = book.description;
         document.getElementById('cover').value = book.cover;
-        document.getElementById('read-checkbox').checked = book.read || false;
+        document.getElementById('read-checkbox').checked = book.read || false; // Set the "read" checkbox
         document.getElementById('modal-title').textContent = 'Edit Book';
+        deleteBtn.style.display = 'inline'; // Show the delete button when editing
         modal.style.display = 'flex';
     }
 
@@ -118,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         editingBookIndex = null; // Reset editingBookIndex when adding new book
         form.reset(); // Clear the form
         document.getElementById('modal-title').textContent = 'Add New Book';
+        deleteBtn.style.display = 'none'; // Hide the delete button when adding a new book
         modal.style.display = 'flex';
     });
 
@@ -136,35 +131,42 @@ document.addEventListener('DOMContentLoaded', function () {
             isbn: document.getElementById('isbn').value,
             genre: document.getElementById('genre').value,
             description: document.getElementById('description').value,
-            cover: document.getElementById('cover').value
-            read: document.getElementById('read-checkbox').checked
+            cover: document.getElementById('cover').value,
+            read: document.getElementById('read-checkbox').checked // Get the "read" status
         };
-
-        console.log("Form submitted, book data:", bookData); // Debugging
 
         if (editingBookIndex !== null) {
             // Update the book in Firestore
             const bookId = books[editingBookIndex].id;
             updateBookInFirestore(bookId, bookData).then(() => {
                 loadBooks(); // Refresh the list
-                console.log("Book updated successfully"); // Debugging
             });
         } else {
             // Add a new book
             saveBookToFirestore(bookData).then(() => {
                 loadBooks(); // Refresh the list
-                console.log("Book added successfully"); // Debugging
             });
         }
 
         modal.style.display = 'none'; // Close the modal
     });
 
+    // Delete book when delete button is clicked
+    deleteBtn.addEventListener('click', function () {
+        if (editingBookIndex !== null) {
+            const bookId = books[editingBookIndex].id;
+            deleteBookFromFirestore(bookId).then(() => {
+                loadBooks(); // Refresh the list after deletion
+                modal.style.display = 'none'; // Close the modal after deletion
+            });
+        }
+    });
+
     // Dynamic search functionality
     searchBar.addEventListener('input', function () {
         const searchTerm = searchBar.value.toLowerCase();
         if (searchTerm === '') {
-            displayBooks([]); // Hide all books if serach bar is empty
+            displayBooks([]); // Hide all books if search bar is empty
         } else {
             const filteredBooks = books.filter(book => {
                 return (
@@ -173,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     book.isbn.toLowerCase().includes(searchTerm)
                 );
             });
-            displayBooks(filteredBooks); // Display filtered books
+            displayBooks(filteredBooks); // Show filtered books
         }
     });
 
