@@ -27,9 +27,9 @@
 
     <!-- Logout Button -->
     <button id="logout-btn" style="display: none;">Logout</button> <!-- This will be shown only when logged in -->
-    
-    <!-- Login Form -->
-    <div id="login-form-modal" class="modal">
+
+    <!-- Login Form Modal -->
+    <div id="login-form-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>Login</h2>
             <form id="login-form">
@@ -43,7 +43,8 @@
             </form>
         </div>
     </div>
-    
+
+    <!-- Book Form Modal -->
     <div id="book-form-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -76,15 +77,10 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-
-    <!-- Firebase App (the core Firebase SDK) -->
+    <!-- Firebase and Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-
-    <!-- Firebase Authentication SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
