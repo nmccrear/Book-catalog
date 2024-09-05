@@ -3,9 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBookBtn = document.getElementById('add-book-btn');
     const closeModal = document.querySelector('.close');
     const form = document.getElementById('book-form');
-    const deleteBtn = document.getElementById('delete-book-btn');
+    const deleteBtn = document.getElementById('delete-book-btn'); // Button for deleting a book
     const bookList = document.getElementById('book-list');
-    const searchBar = document.getElementById('search-bar');	
+    const searchBar = document.getElementById('search-bar');
+    
+    // Login/Logout
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const loginBtn = document.getElementById('login-btn');
@@ -13,8 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const logoutBtn = document.getElementById('logout-btn');
     const loginModal = document.getElementById('login-form-modal');
     const registerModal = document.getElementById('register-form-modal');
+
     let books = [];
-    let editingBookIndex = null;
+    let editingBookIndex = null; // Track if adding or editing a book
 
     // Function to escape user inputs to prevent XSS
     function escapeHTML(str) {
@@ -26,22 +29,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 	// Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
-        var firebaseConfig = {
-            apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
-            authDomain: "book-catalog-39f2b.firebaseapp.com",
-            projectId: "book-catalog-39f2b",
-            storageBucket: "book-catalog-39f2b.appspot.com",
-            messagingSenderId: "610607159158",
-            appId: "1:610607159158:web:dc0050120cac1a0e370c57",
-            measurementId: "G-3M9KWMRPD9"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+	var firebaseConfig = {
+	apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
+	authDomain: "book-catalog-39f2b.firebaseapp.com",
+	projectId: "book-catalog-39f2b",
+	storageBucket: "book-catalog-39f2b.appspot.com",
+	messagingSenderId: "610607159158",
+	appId: "1:610607159158:web:dc0050120cac1a0e370c57",
+	measurementId: "G-3M9KWMRPD9"
+     };
+     // Initialize Firebase
+     firebase.initializeApp(firebaseConfig);
   
-        // Initialize Firestore
-        var db = firebase.firestore();
-
- // Firebase Auth State Change Listener
+     // Initialize Firestore
+     var db = firebase.firestore();
+	
+    // Firebase Auth State Change Listener
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             console.log('User logged in: ', user.email);
@@ -101,36 +104,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Open login modal
-    loginBtn.addEventListener('click', function() {
-        loginModal.style.display = 'block';
-    });
-
-    // Open register modal
-    registerBtn.addEventListener('click', function() {
-        registerModal.style.display = 'block';
-    });
-
-    // Close modal logic (implement similar to your book modal close logic)
-});
-
     // Function to load books from Firestore
     function loadBooks() {
-	const user = firebase.auth().currentUser;
-    	if (user) {
-	        db.collection("books").get().then((querySnapshot) => {
-	            books = [];
-	            querySnapshot.forEach((doc) => {
-	                books.push({ id: doc.id, ...doc.data() });
-	            });
-	            displayBooks([]); // Hide books initially
-	        }).catch((error) => {
-	            console.error("Error loading books: ", error);
-	        });
-    	} else {
-        	console.log('User not logged in');
-    	}
-}
+        const user = firebase.auth().currentUser;
+        if (user) {
+            db.collection("books").get().then((querySnapshot) => {
+                books = [];
+                querySnapshot.forEach((doc) => {
+                    books.push({ id: doc.id, ...doc.data() });
+                });
+                displayBooks([]); // Hide books initially
+            }).catch((error) => {
+                console.error("Error loading books: ", error);
+            });
+        } else {
+            console.log('User not logged in');
+        }
+    }
 
     // Function to save a book to Firestore
     function saveBookToFirestore(book) {
@@ -197,17 +187,19 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('cover').value = book.cover;
         document.getElementById('read-checkbox').checked = book.read || false;
         document.getElementById('modal-title').textContent = 'Edit Book';
-        deleteBtn.style.display = 'inline';
-        modal.style.display = 'flex';
+        deleteBtn.style.display = 'inline'; // Show delete button when editing
+        modal.style.display = 'flex'; // Open the modal
+        console.log("Edit book modal opened");
     }
 
     // Show the modal when "Add New Book" is clicked
     addBookBtn.addEventListener('click', function () {
-        editingBookIndex = null;
-        form.reset();
+        editingBookIndex = null; // Reset editingBookIndex when adding new book
+        form.reset(); // Clear the form
         document.getElementById('modal-title').textContent = 'Add New Book';
-        deleteBtn.style.display = 'none';
-        modal.style.display = 'flex';
+        deleteBtn.style.display = 'none'; // Hide delete button for new books
+        modal.style.display = 'flex'; // Open the modal
+        console.log("Add new book modal opened");
     });
 
     // Close the modal when the "x" is clicked
@@ -217,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add/Edit book form submission
     form.addEventListener('submit', function (e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent form from reloading the page
 
         const bookData = {
             title: escapeHTML(document.getElementById('title').value),
@@ -229,18 +221,20 @@ document.addEventListener('DOMContentLoaded', function () {
             read: document.getElementById('read-checkbox').checked
         };
 
+        console.log("Form submitted, book data:", bookData);
+
         if (editingBookIndex !== null) {
             const bookId = books[editingBookIndex].id;
             updateBookInFirestore(bookId, bookData).then(() => {
-                loadBooks();
+                loadBooks(); // Refresh the list after updating
             });
         } else {
             saveBookToFirestore(bookData).then(() => {
-                loadBooks();
+                loadBooks(); // Refresh the list after adding
             });
         }
 
-        modal.style.display = 'none';
+        modal.style.display = 'none'; // Close the modal
     });
 
     // Delete book when delete button is clicked
@@ -248,8 +242,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (editingBookIndex !== null) {
             const bookId = books[editingBookIndex].id;
             deleteBookFromFirestore(bookId).then(() => {
-                loadBooks();
-                modal.style.display = 'none';
+                loadBooks(); // Refresh the list after deletion
+                modal.style.display = 'none'; // Close the modal after deletion
             });
         }
     });
@@ -258,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
     searchBar.addEventListener('input', function () {
         const searchTerm = searchBar.value.toLowerCase();
         if (searchTerm === '') {
-            displayBooks([]);
+            displayBooks([]); // Hide all books if search bar is empty
         } else {
             const filteredBooks = books.filter(book => {
                 return (
@@ -267,9 +261,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     book.isbn.toLowerCase().includes(searchTerm)
                 );
             });
-            displayBooks(filteredBooks);
+            displayBooks(filteredBooks); // Show filtered books
         }
     });
 
     // Initial load of books from Firestore
     loadBooks();
+});
