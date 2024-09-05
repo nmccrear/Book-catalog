@@ -3,21 +3,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBookBtn = document.getElementById('add-book-btn');
     const closeModal = document.querySelector('.close');
     const form = document.getElementById('book-form');
-    const deleteBtn = document.getElementById('delete-book-btn'); // Add a reference to the delete button
+    const deleteBtn = document.getElementById('delete-book-btn');
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     let books = [];
-    let editingBookIndex = null; // Used to track if editing or adding a new book
+    let editingBookIndex = null;
 
-        // Function to escape user inputs to prevent XSS
-        function escapeHTML(str) {
+    // Function to escape user inputs to prevent XSS
+    function escapeHTML(str) {
         return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#039;');
-    
-        // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#039;');
+    }
+
+	// Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
         var firebaseConfig = {
             apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
             authDomain: "book-catalog-39f2b.firebaseapp.com",
@@ -32,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
   
         // Initialize Firestore
         var db = firebase.firestore();
-    
-    /// Function to load books from Firestore
+
+    // Function to load books from Firestore
     function loadBooks() {
         db.collection("books").get().then((querySnapshot) => {
             books = [];
@@ -75,14 +76,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 bookItem.classList.add('book-item');
                 
                 bookItem.innerHTML = `
-                    <img src="${book.cover || 'cover.jpg'}" alt="Book Cover" class="book-cover">
+                    <img src="${escapeHTML(book.cover) || 'cover.jpg'}" alt="Book Cover" class="book-cover">
                     <div class="book-info">
-                        <h2>${book.title}</h2>
-                        <p><strong>Author:</strong> ${book.author}</p>
-                        <p><strong>Genre:</strong> ${book.genre}</p>
-                        <p><strong>Description:</strong> ${book.description}</p>
-                        <p><strong>ISBN:</strong> ${book.isbn}</p>
-                        ${book.read ? '<p><strong>Status:</strong> Read</p>' : ''} <!-- Display "Read" if book has been marked as read -->
+                        <h2>${escapeHTML(book.title)}</h2>
+                        <p><strong>Author:</strong> ${escapeHTML(book.author)}</p>
+                        <p><strong>Genre:</strong> ${escapeHTML(book.genre)}</p>
+                        <p><strong>Description:</strong> ${escapeHTML(book.description)}</p>
+                        <p><strong>ISBN:</strong> ${escapeHTML(book.isbn)}</p>
+                        ${book.read ? '<p><strong>Status:</strong> Read</p>' : ''}
                         <button class="edit-book-btn" data-index="${index}">Edit</button>
                     </div>
                 `;
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to open the modal for editing a book
     function editBook(index) {
-        editingBookIndex = index; // Set the editing book index
+        editingBookIndex = index;
         const book = books[index];
         document.getElementById('title').value = book.title;
         document.getElementById('author').value = book.author;
@@ -109,18 +110,18 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('genre').value = book.genre;
         document.getElementById('description').value = book.description;
         document.getElementById('cover').value = book.cover;
-        document.getElementById('read-checkbox').checked = book.read || false; // Set the "read" checkbox
+        document.getElementById('read-checkbox').checked = book.read || false;
         document.getElementById('modal-title').textContent = 'Edit Book';
-        deleteBtn.style.display = 'inline'; // Show the delete button when editing
+        deleteBtn.style.display = 'inline';
         modal.style.display = 'flex';
     }
 
     // Show the modal when "Add New Book" is clicked
     addBookBtn.addEventListener('click', function () {
-        editingBookIndex = null; // Reset editingBookIndex when adding new book
-        form.reset(); // Clear the form
+        editingBookIndex = null;
+        form.reset();
         document.getElementById('modal-title').textContent = 'Add New Book';
-        deleteBtn.style.display = 'none'; // Hide the delete button when adding a new book
+        deleteBtn.style.display = 'none';
         modal.style.display = 'flex';
     });
 
@@ -131,32 +132,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add/Edit book form submission
     form.addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent form from reloading the page
+        e.preventDefault();
 
         const bookData = {
-            title: document.getElementById('title').value,
-            author: document.getElementById('author').value,
-            isbn: document.getElementById('isbn').value,
-            genre: document.getElementById('genre').value,
-            description: document.getElementById('description').value,
-            cover: document.getElementById('cover').value,
-            read: document.getElementById('read-checkbox').checked // Get the "read" status
+            title: escapeHTML(document.getElementById('title').value),
+            author: escapeHTML(document.getElementById('author').value),
+            isbn: escapeHTML(document.getElementById('isbn').value),
+            genre: escapeHTML(document.getElementById('genre').value),
+            description: escapeHTML(document.getElementById('description').value),
+            cover: escapeHTML(document.getElementById('cover').value),
+            read: document.getElementById('read-checkbox').checked
         };
 
         if (editingBookIndex !== null) {
-            // Update the book in Firestore
             const bookId = books[editingBookIndex].id;
             updateBookInFirestore(bookId, bookData).then(() => {
-                loadBooks(); // Refresh the list
+                loadBooks();
             });
         } else {
-            // Add a new book
             saveBookToFirestore(bookData).then(() => {
-                loadBooks(); // Refresh the list
+                loadBooks();
             });
         }
 
-        modal.style.display = 'none'; // Close the modal
+        modal.style.display = 'none';
     });
 
     // Delete book when delete button is clicked
@@ -164,8 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (editingBookIndex !== null) {
             const bookId = books[editingBookIndex].id;
             deleteBookFromFirestore(bookId).then(() => {
-                loadBooks(); // Refresh the list after deletion
-                modal.style.display = 'none'; // Close the modal after deletion
+                loadBooks();
+                modal.style.display = 'none';
             });
         }
     });
@@ -174,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
     searchBar.addEventListener('input', function () {
         const searchTerm = searchBar.value.toLowerCase();
         if (searchTerm === '') {
-            displayBooks([]); // Hide all books if search bar is empty
+            displayBooks([]);
         } else {
             const filteredBooks = books.filter(book => {
                 return (
@@ -183,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     book.isbn.toLowerCase().includes(searchTerm)
                 );
             });
-            displayBooks(filteredBooks); // Show filtered books
+            displayBooks(filteredBooks);
         }
     });
 
