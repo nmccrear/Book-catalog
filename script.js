@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchBar = document.getElementById('search-bar');
     let books = [];
     let editingBookIndex = null; // Ensure this is properly initialized
-    src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"
-
-    src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"
 
         // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
         var firebaseConfig = {
@@ -26,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
         // Initialize Firestore
         var db = firebase.firestore();
+    
     // Function to load books from Firestore
     function loadBooks() {
         db.collection("books").get().then((querySnapshot) => {
