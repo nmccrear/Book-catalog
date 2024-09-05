@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Show login modal
     loginBtn.addEventListener('click', function() {
         loginModal.style.display = 'block';
+	console.log("Login button clicked, modal opened");
     });
 
     // Firebase Auth State Change Listener
