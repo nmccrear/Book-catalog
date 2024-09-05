@@ -7,12 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
     const loginBtn = document.getElementById('login-btn');
-    const registerBtn = document.getElementById('register-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const loginModal = document.getElementById('login-form-modal');
-    const registerModal = document.getElementById('register-form-modal');
 
     let books = [];
     let editingBookIndex = null; // Track if adding or editing a book
@@ -48,25 +45,18 @@ document.addEventListener('DOMContentLoaded', function () {
         loginModal.style.display = 'block';
     });
 
-    // Show register modal
-    registerBtn.addEventListener('click', function() {
-        registerModal.style.display = 'block';
-    });
-
     // Firebase Auth State Change Listener
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             console.log('User logged in: ', user.email);
             // Hide login/register, show logout and load books
             loginBtn.style.display = 'none';
-            registerBtn.style.display = 'none';
             logoutBtn.style.display = 'inline';
             loadBooks(); // Only load books if logged in
         } else {
             console.log('User logged out');
-            // Show login/register, hide logout
+            // Show login, hide logout
             loginBtn.style.display = 'inline';
-            registerBtn.style.display = 'inline';
             logoutBtn.style.display = 'none';
             bookList.innerHTML = ''; // Clear book list if logged out
         }
@@ -88,22 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // Handle Register Form Submission
-    registerForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                console.log('Registered successfully');
-                registerModal.style.display = 'none'; // Close the register modal
-            })
-            .catch((error) => {
-                console.error('Registration failed: ', error.message);
-            });
-    });
-
     // Handle Logout
     logoutBtn.addEventListener('click', function() {
         firebase.auth().signOut().then(() => {
@@ -113,13 +87,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Close login and register modals if clicked outside of them (optional)
+    // Close login modal if clicked outside of them (optional)
     window.addEventListener('click', function(event) {
         if (event.target == loginModal) {
             loginModal.style.display = 'none';
-        }
-        if (event.target == registerModal) {
-            registerModal.style.display = 'none';
         }
     });
 });
