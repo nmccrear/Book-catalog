@@ -22,6 +22,43 @@
         </div>
     </div>
 
+    <!-- Login Form -->
+    <div id="login-form-modal" class="modal">
+        <div class="modal-content">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" name="login-email" required>
+
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" name="login-password" required>
+
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form-modal" class="modal">
+        <div class="modal-content">
+            <h2>Register</h2>
+            <form id="register-form">
+                <label for="register-email">Email:</label>
+                <input type="email" id="register-email" name="register-email" required>
+    
+                <label for="register-password">Password:</label>
+                <input type="password" id="register-password" name="register-password" required>
+    
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add buttons for login/register -->
+    <button id="login-btn">Login</button>
+    <button id="register-btn">Register</button>
+    <button id="logout-btn" style="display: none;">Logout</button> <!-- Logout button, hidden initially -->
+    
     <div id="book-form-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
