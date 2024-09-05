@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
             querySnapshot.forEach((doc) => {
                 books.push({ id: doc.id, ...doc.data() });
             });
-            displayBooks(books); // Display all books initially
+            displayBooks([]); // Hide books initially
         }).catch((error) => {
             console.error("Error loading books: ", error);
         });
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
     searchBar.addEventListener('input', function () {
         const searchTerm = searchBar.value.toLowerCase();
         if (searchTerm === '') {
-            displayBooks(books); // If search bar is empty, display all books
+            displayBooks([]); // Hide all books if serach bar is empty
         } else {
             const filteredBooks = books.filter(book => {
                 return (
