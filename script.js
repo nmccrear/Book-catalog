@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 bookItem.classList.add('book-item');
                 
                 bookItem.innerHTML = `
-                    <img src="${escapeHTML(book.cover) || 'cover.jpg'}" alt="Book Cover" class="book-cover">
+                    <img src="${(book.cover) || 'cover.jpg'}" alt="Book Cover" class="book-cover">
                     <div class="book-info">
-                        <h2>${escapeHTML(book.title)}</h2>
-                        <p><strong>Author:</strong> ${escapeHTML(book.author)}</p>
-                        <p><strong>Genre:</strong> ${escapeHTML(book.genre)}</p>
-                        <p><strong>Description:</strong> ${escapeHTML(book.description)}</p>
-                        <p><strong>ISBN:</strong> ${escapeHTML(book.isbn)}</p>
+                        <h2>${(book.title)}</h2>
+                        <p><strong>Author:</strong> ${(book.author)}</p>
+                        <p><strong>Genre:</strong> ${(book.genre)}</p>
+                        <p><strong>Description:</strong> ${(book.description)}</p>
+                        <p><strong>ISBN:</strong> ${(book.isbn)}</p>
                         ${book.read ? '<p><strong>Status:</strong> Read</p>' : ''}
                         <button class="edit-book-btn" data-index="${index}">Edit</button>
                     </div>
