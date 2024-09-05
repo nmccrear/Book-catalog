@@ -22,7 +22,6 @@
         </div>
     </div>
 
-    <!-- Modal for adding/editing a book -->
     <div id="book-form-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -30,29 +29,27 @@
             <form id="book-form">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required>
-
+    
                 <label for="author">Author:</label>
                 <input type="text" id="author" name="author" required>
-
+    
                 <label for="isbn">ISBN:</label>
                 <input type="text" id="isbn" name="isbn" required>
-
+    
                 <label for="genre">Genre:</label>
                 <input type="text" id="genre" name="genre" required>
-
+    
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" required></textarea>
-
+    
                 <label for="cover">Cover Image URL:</label>
                 <input type="text" id="cover" name="cover">
-
+    
                 <label for="read-checkbox">Mark as Read:</label>
                 <input type="checkbox" id="read-checkbox">
-
+    
                 <button type="submit" id="save-btn">Save</button>
-                <button type="button" id="delete-book-btn" style="display: none;">Delete</button>
-
-                <button type="submit" id="save-btn">Save</button>
+                <button type="button" id="delete-book-btn" style="display: none;">Delete</button> <!-- Delete button -->
             </form>
         </div>
     </div>
