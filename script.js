@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let books = [];
     let editingBookIndex = null; // Used to track if editing or adding a new book
 
+        // Function to escape user inputs to prevent XSS
+        function escapeHTML(str) {
+        return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;');
+    
         // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
         var firebaseConfig = {
             apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
