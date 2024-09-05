@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteBtn = document.getElementById('delete-book-btn'); // Button for deleting a book
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
-    
-    // Login/Logout
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const loginBtn = document.getElementById('login-btn');
@@ -54,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
     registerBtn.addEventListener('click', function() {
         registerModal.style.display = 'block';
     });
-	
+
     // Firebase Auth State Change Listener
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -74,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Login Form Submission
+    // Handle Login Form Submission
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
@@ -82,15 +80,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                console.log('Logged in');
-                loginModal.style.display = 'none'; // Close login modal on success
+                console.log('Logged in successfully');
+                loginModal.style.display = 'none'; // Close the login modal
             })
             .catch((error) => {
-                console.error('Error logging in: ', error.message);
+                console.error('Login failed: ', error.message);
             });
     });
 
-    // Register Form Submission
+    // Handle Register Form Submission
     registerForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('register-email').value;
@@ -98,22 +96,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
         firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                console.log('Registered');
-                registerModal.style.display = 'none'; // Close register modal on success
+                console.log('Registered successfully');
+                registerModal.style.display = 'none'; // Close the register modal
             })
             .catch((error) => {
-                console.error('Error registering: ', error.message);
+                console.error('Registration failed: ', error.message);
             });
     });
 
-    // Logout button
+    // Handle Logout
     logoutBtn.addEventListener('click', function() {
         firebase.auth().signOut().then(() => {
-            console.log('Logged out');
+            console.log('Logged out successfully');
         }).catch((error) => {
-            console.error('Error logging out: ', error.message);
+            console.error('Logout failed: ', error.message);
         });
     });
+
+    // Close login and register modals if clicked outside of them (optional)
+    window.addEventListener('click', function(event) {
+        if (event.target == loginModal) {
+            loginModal.style.display = 'none';
+        }
+        if (event.target == registerModal) {
+            registerModal.style.display = 'none';
+        }
+    });
+});
 
     // Function to load books from Firestore
     function loadBooks() {
