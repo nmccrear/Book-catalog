@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBookBtn = document.getElementById('add-book-btn');
     const closeModal = document.querySelector('.close');
     const form = document.getElementById('book-form');
+    const deleteBtn = document.getElementById('delete-book-btn');
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     let books = [];
@@ -55,6 +56,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Function to delete a book from Firestore
+    function deleteBookFromFirestore(id) {
+        return db.collection("books").doc(id).delete();
+    }
+    
     // Function to display books
     function displayBooks(filteredBooks = []) {
         bookList.innerHTML = ''; // Clear the list
@@ -102,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('genre').value = book.genre;
         document.getElementById('description').value = book.description;
         document.getElementById('cover').value = book.cover;
+        document.getElementById('read-checkbox').checked = book.read || false;
         document.getElementById('modal-title').textContent = 'Edit Book';
         modal.style.display = 'flex';
     }
@@ -130,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
             genre: document.getElementById('genre').value,
             description: document.getElementById('description').value,
             cover: document.getElementById('cover').value
+            read: document.getElementById('read-checkbox').checked
         };
 
         console.log("Form submitted, book data:", bookData); // Debugging
