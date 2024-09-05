@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     let books = [];
+    let editingBookIndex = null; // Ensure this is properly initialized
 
     // Function to load books from Firestore
     function loadBooks() {
@@ -15,17 +16,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 books.push({ id: doc.id, ...doc.data() });
             });
             displayBooks(books); // Display all books initially
+        }).catch((error) => {
+            console.error("Error loading books: ", error);
         });
     }
 
     // Function to save a book to Firestore
     function saveBookToFirestore(book) {
-        return db.collection("books").add(book);
+        return db.collection("books").add(book).then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+        }).catch((error) => {
+            console.error("Error adding book: ", error);
+        });
     }
 
     // Function to update a book in Firestore
     function updateBookInFirestore(id, updatedBook) {
-        return db.collection("books").doc(id).update(updatedBook);
+        return db.collection("books").doc(id).update(updatedBook).then(() => {
+            console.log("Document successfully updated!");
+        }).catch((error) => {
+            console.error("Error updating book: ", error);
+        });
     }
 
     // Function to display books
@@ -67,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to open the modal for editing a book
     function editBook(index) {
+        editingBookIndex = index; // Set the editing book index
         const book = books[index];
         document.getElementById('title').value = book.title;
         document.getElementById('author').value = book.author;
@@ -80,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Show the modal when "Add New Book" is clicked
     addBookBtn.addEventListener('click', function () {
-        form.reset();
+        editingBookIndex = null; // Reset editingBookIndex when adding new book
+        form.reset(); // Clear the form
         document.getElementById('modal-title').textContent = 'Add New Book';
         modal.style.display = 'flex';
     });
@@ -92,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add/Edit book form submission
     form.addEventListener('submit', function (e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent form from reloading the page
 
         const bookData = {
             title: document.getElementById('title').value,
@@ -103,16 +116,20 @@ document.addEventListener('DOMContentLoaded', function () {
             cover: document.getElementById('cover').value
         };
 
+        console.log("Form submitted, book data:", bookData); // Debugging
+
         if (editingBookIndex !== null) {
             // Update the book in Firestore
             const bookId = books[editingBookIndex].id;
             updateBookInFirestore(bookId, bookData).then(() => {
                 loadBooks(); // Refresh the list
+                console.log("Book updated successfully"); // Debugging
             });
         } else {
             // Add a new book
             saveBookToFirestore(bookData).then(() => {
                 loadBooks(); // Refresh the list
+                console.log("Book added successfully"); // Debugging
             });
         }
 
