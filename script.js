@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('book-form');
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
-    const searchBtn = document.getElementById('search-btn');
     let books = [];
 
     // Function to load books from Firestore
@@ -15,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
             querySnapshot.forEach((doc) => {
                 books.push({ id: doc.id, ...doc.data() });
             });
-            displayBooks([]); // Display nothing initially
+            displayBooks(books); // Display all books initially
         });
     }
 
@@ -120,11 +119,11 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.style.display = 'none'; // Close the modal
     });
 
-    // Search functionality (triggered only on button click)
-    searchBtn.addEventListener('click', function () {
+    // Dynamic search functionality
+    searchBar.addEventListener('input', function () {
         const searchTerm = searchBar.value.toLowerCase();
         if (searchTerm === '') {
-            displayBooks([]); // If search bar is empty, don't show any books
+            displayBooks(books); // If search bar is empty, display all books
         } else {
             const filteredBooks = books.filter(book => {
                 return (
@@ -133,10 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     book.isbn.toLowerCase().includes(searchTerm)
                 );
             });
-            displayBooks(filteredBooks);
+            displayBooks(filteredBooks); // Display filtered books
         }
     });
 
-    // Initial load of books
+    // Initial load of books from Firestore
     loadBooks();
 });
