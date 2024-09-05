@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBookBtn = document.getElementById('add-book-btn');
     const closeModal = document.querySelector('.close');
     const form = document.getElementById('book-form');
-    const deleteBtn = document.getElementById('delete-book-btn');
+    const deleteBtn = document.getElementById('delete-book-btn'); // Button for deleting a book
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const loginModal = document.getElementById('login-form-modal');
 
     let books = [];
-    let editingBookIndex = null; // Track if adding or editing a book
+    let currentEditingBookId = null; // Track which book is being edited by its Firestore document ID
 
     // Firebase configuration (replace with your actual Firebase config)
     var firebaseConfig = {
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    console.log("Firebase initialized: ", firebase);
     
     // Initialize Firestore and Auth
     var db = firebase.firestore();
@@ -125,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return db.collection("books").doc(id).delete();
     }
 
-    // Function to display books
+    // Function to display books (update to use document ID)
     function displayBooks(filteredBooks = []) {
         bookList.innerHTML = ''; // Clear the list
 
@@ -134,55 +133,58 @@ document.addEventListener('DOMContentLoaded', function () {
             noResults.textContent = 'No results found.';
             bookList.appendChild(noResults);
         } else {
-            filteredBooks.forEach((book, index) => {
+            filteredBooks.forEach((book) => {
                 const bookItem = document.createElement('div');
                 bookItem.classList.add('book-item');
                 
                 bookItem.innerHTML = `
-                    <img src="${(book.cover) || 'cover.jpg'}" alt="Book Cover" class="book-cover">
+                    <img src="${book.cover || 'cover.jpg'}" alt="Book Cover" class="book-cover">
                     <div class="book-info">
-                        <h2>${(book.title)}</h2>
-                        <p><strong>Author:</strong> ${(book.author)}</p>
-                        <p><strong>Genre:</strong> ${(book.genre)}</p>
-                        <p><strong>Description:</strong> ${(book.description)}</p>
-                        <p><strong>ISBN:</strong> ${(book.isbn)}</p>
+                        <h2>${book.title}</h2>
+                        <p><strong>Author:</strong> ${book.author}</p>
+                        <p><strong>Genre:</strong> ${book.genre}</p>
+                        <p><strong>Description:</strong> ${book.description}</p>
+                        <p><strong>ISBN:</strong> ${book.isbn}</p>
                         ${book.read ? '<p><strong>Status:</strong> Read</p>' : ''}
-                        <button class="edit-book-btn" data-index="${index}">Edit</button>
+                        <button class="edit-book-btn" data-id="${book.id}">Edit</button> <!-- Attach book ID here -->
                     </div>
                 `;
                 bookList.appendChild(bookItem);
             });
 
+            // Attach event listeners to the edit buttons
             const editButtons = document.querySelectorAll('.edit-book-btn');
             editButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    const bookIndex = button.getAttribute('data-index');
-                    editBook(bookIndex);
+                    const bookId = button.getAttribute('data-id'); // Get the Firestore document ID
+                    editBook(bookId); // Pass document ID to the edit function
                 });
             });
         }
     }
 
-    // Function to open the modal for editing a book
-    function editBook(index) {
-        editingBookIndex = index;
-        const book = books[index];
-        document.getElementById('title').value = book.title;
-        document.getElementById('author').value = book.author;
-        document.getElementById('isbn').value = book.isbn;
-        document.getElementById('genre').value = book.genre;
-        document.getElementById('description').value = book.description;
-        document.getElementById('cover').value = book.cover;
-        document.getElementById('read-checkbox').checked = book.read || false;
-        document.getElementById('modal-title').textContent = 'Edit Book';
-        deleteBtn.style.display = 'inline'; // Show delete button when editing
-        modal.style.display = 'flex'; // Open the modal
-        console.log("Edit book modal opened");
+    // Function to open the modal for editing a book using Firestore document ID
+    function editBook(bookId) {
+        currentEditingBookId = bookId; // Set the current editing book's ID
+        const book = books.find(book => book.id === bookId); // Find the correct book by its ID
+        if (book) {
+            document.getElementById('title').value = book.title;
+            document.getElementById('author').value = book.author;
+            document.getElementById('isbn').value = book.isbn;
+            document.getElementById('genre').value = book.genre;
+            document.getElementById('description').value = book.description;
+            document.getElementById('cover').value = book.cover;
+            document.getElementById('read-checkbox').checked = book.read || false;
+            document.getElementById('modal-title').textContent = 'Edit Book';
+            deleteBtn.style.display = 'inline'; // Show delete button when editing
+            modal.style.display = 'flex'; // Open the modal
+            console.log("Edit book modal opened for book ID:", bookId);
+        }
     }
 
     // Show the modal when "Add New Book" is clicked
     addBookBtn.addEventListener('click', function () {
-        editingBookIndex = null; // Reset editingBookIndex when adding new book
+        currentEditingBookId = null; // Reset currentEditingBookId when adding new book
         form.reset(); // Clear the form
         document.getElementById('modal-title').textContent = 'Add New Book';
         deleteBtn.style.display = 'none'; // Hide delete button for new books
@@ -200,20 +202,19 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault(); // Prevent form from reloading the page
 
         const bookData = {
-            title: (document.getElementById('title').value),
-            author: (document.getElementById('author').value),
-            isbn: (document.getElementById('isbn').value),
-            genre: (document.getElementById('genre').value),
-            description: (document.getElementById('description').value),
-            cover: (document.getElementById('cover').value),
+            title: document.getElementById('title').value,
+            author: document.getElementById('author').value,
+            isbn: document.getElementById('isbn').value,
+            genre: document.getElementById('genre').value,
+            description: document.getElementById('description').value,
+            cover: document.getElementById('cover').value,
             read: document.getElementById('read-checkbox').checked
         };
 
         console.log("Form submitted, book data:", bookData);
 
-        if (editingBookIndex !== null) {
-            const bookId = books[editingBookIndex].id;
-            updateBookInFirestore(bookId, bookData).then(() => {
+        if (currentEditingBookId !== null) {
+            updateBookInFirestore(currentEditingBookId, bookData).then(() => {
                 loadBooks(); // Refresh the list after updating
             });
         } else {
@@ -227,9 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Delete book when delete button is clicked
     deleteBtn.addEventListener('click', function () {
-        if (editingBookIndex !== null) {
-            const bookId = books[editingBookIndex].id;
-            deleteBookFromFirestore(bookId).then(() => {
+        if (currentEditingBookId !== null) {
+            deleteBookFromFirestore(currentEditingBookId).then(() => {
                 loadBooks(); // Refresh the list after deletion
                 modal.style.display = 'none'; // Close the modal after deletion
             });
