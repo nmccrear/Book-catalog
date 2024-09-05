@@ -65,19 +65,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle Login Form Submission
     loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
+    e.preventDefault();
+    
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-        firebase.auth().signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                console.log('Logged in successfully');
-                loginModal.style.display = 'none'; // Close the login modal
-            })
-            .catch((error) => {
-                console.error('Login failed: ', error.message);
-            });
-    });
+    console.log("Attempting to log in with email: ", email);
+
+    firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            console.log('Logged in successfully');
+            loginModal.style.display = 'none'; // Close the login modal
+        })
+        .catch((error) => {
+            console.error('Login failed: ', error.message);
+        });
+});
 
     // Handle Logout
     logoutBtn.addEventListener('click', function() {
