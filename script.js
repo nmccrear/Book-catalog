@@ -7,7 +7,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchBar = document.getElementById('search-bar');
     let books = [];
     let editingBookIndex = null; // Ensure this is properly initialized
+    src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"
 
+    src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"
+
+        // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
+        var firebaseConfig = {
+            apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
+            authDomain: "book-catalog-39f2b.firebaseapp.com",
+            projectId: "book-catalog-39f2b",
+            storageBucket: "book-catalog-39f2b.appspot.com",
+            messagingSenderId: "610607159158",
+            appId: "1:610607159158:web:dc0050120cac1a0e370c57",
+            measurementId: "G-3M9KWMRPD9"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+  
+        // Initialize Firestore
+        var db = firebase.firestore();
     // Function to load books from Firestore
     function loadBooks() {
         db.collection("books").get().then((querySnapshot) => {
