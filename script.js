@@ -41,8 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
      // Initialize Firebase
      firebase.initializeApp(firebaseConfig);
   
-     // Initialize Firestore
+     // Initialize Firestore and Auth
      var db = firebase.firestore();
+     var auth = firebase.auth(); 
 	
     // Firebase Auth State Change Listener
     firebase.auth().onAuthStateChanged(function(user) {
