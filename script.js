@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addBookBtn = document.getElementById('add-book-btn');
     const closeModal = document.querySelector('.close');
     const form = document.getElementById('book-form');
-    const deleteBtn = document.getElementById('delete-book-btn'); // Button for deleting a book
+    const deleteBtn = document.getElementById('delete-book-btn');
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
     
@@ -25,23 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   .replace(/'/g, '&#039;');
     }
 
-    // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
-    var firebaseConfig = {
-	apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
-	authDomain: "book-catalog-39f2b.firebaseapp.com",
-	projectId: "book-catalog-39f2b",
-	storageBucket: "book-catalog-39f2b.appspot.com",
-	messagingSenderId: "610607159158",
-	appId: "1:610607159158:web:dc0050120cac1a0e370c57",
-	measurementId: "G-3M9KWMRPD9"
-     };
-	
-     // Initialize Firebase
-     firebase.initializeApp(firebaseConfig);
-  
-     // Initialize Firestore
-     var db = firebase.firestore();
-	
     // Firebase configuration (replace with your actual Firebase config)
     var firebaseConfig = {
         apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
