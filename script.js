@@ -5,14 +5,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('book-form');
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
+    const searchBtn = document.getElementById('search-btn');
     let books = [];
-    let editingBookIndex = null;
+
+    // Function to load books from Firestore
+    function loadBooks() {
+        db.collection("books").get().then((querySnapshot) => {
+            books = [];
+            querySnapshot.forEach((doc) => {
+                books.push({ id: doc.id, ...doc.data() });
+            });
+            displayBooks([]); // Display nothing initially
+        });
+    }
+
+    // Function to save a book to Firestore
+    function saveBookToFirestore(book) {
+        return db.collection("books").add(book);
+    }
+
+    // Function to update a book in Firestore
+    function updateBookInFirestore(id, updatedBook) {
+        return db.collection("books").doc(id).update(updatedBook);
+    }
 
     // Function to display books
     function displayBooks(filteredBooks = []) {
         bookList.innerHTML = ''; // Clear the list
 
-        // If no books are found and the search bar is not empty, show "No results found."
         if (filteredBooks.length === 0 && searchBar.value.trim() !== '') {
             const noResults = document.createElement('p');
             noResults.textContent = 'No results found.';
@@ -36,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 bookList.appendChild(bookItem);
             });
 
-            // Add event listeners to all "Edit" buttons
             const editButtons = document.querySelectorAll('.edit-book-btn');
             editButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -49,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to open the modal for editing a book
     function editBook(index) {
-        editingBookIndex = index;
         const book = books[index];
         document.getElementById('title').value = book.title;
         document.getElementById('author').value = book.author;
@@ -63,10 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Show the modal when "Add New Book" is clicked
     addBookBtn.addEventListener('click', function () {
-        editingBookIndex = null; // Set to null when adding a new book
-        form.reset(); // Clear the form
+        form.reset();
         document.getElementById('modal-title').textContent = 'Add New Book';
-        modal.style.display = 'flex'; // Ensure the modal shows
+        modal.style.display = 'flex';
     });
 
     // Close the modal when the "x" is clicked
@@ -74,16 +91,9 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.style.display = 'none';
     });
 
-    // Close the modal when clicking outside of it
-    window.addEventListener('click', function (e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
     // Add/Edit book form submission
     form.addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent form from reloading the page
+        e.preventDefault();
 
         const bookData = {
             title: document.getElementById('title').value,
@@ -95,25 +105,26 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         if (editingBookIndex !== null) {
-            // Update an existing book
-            books[editingBookIndex] = bookData;
+            // Update the book in Firestore
+            const bookId = books[editingBookIndex].id;
+            updateBookInFirestore(bookId, bookData).then(() => {
+                loadBooks(); // Refresh the list
+            });
         } else {
             // Add a new book
-            books.push(bookData);
+            saveBookToFirestore(bookData).then(() => {
+                loadBooks(); // Refresh the list
+            });
         }
 
-        modal.style.display = 'none'; // Close the modal after saving
-        searchBar.value = '';  // Clear the search bar after adding a book
-        displayBooks([]); // Ensure no books are displayed until searched
+        modal.style.display = 'none'; // Close the modal
     });
 
-    // Search functionality
-    searchBar.addEventListener('input', function () {
+    // Search functionality (triggered only on button click)
+    searchBtn.addEventListener('click', function () {
         const searchTerm = searchBar.value.toLowerCase();
-
         if (searchTerm === '') {
-            // If search bar is empty, don't show any books
-            displayBooks([]);
+            displayBooks([]); // If search bar is empty, don't show any books
         } else {
             const filteredBooks = books.filter(book => {
                 return (
@@ -126,6 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Initial display (empty book list on page load)
-    displayBooks([]);
+    // Initial load of books
+    loadBooks();
 });
