@@ -53,28 +53,28 @@
 
     <script src="script.js"></script>
 
-   <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
-    authDomain: "book-catalog-39f2b.firebaseapp.com",
-    projectId: "book-catalog-39f2b",
-    storageBucket: "book-catalog-39f2b.appspot.com",
-    messagingSenderId: "610607159158",
-    appId: "1:610607159158:web:dc0050120cac1a0e370c57",
-    measurementId: "G-3M9KWMRPD9"
-  };
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-   </script>
+    <script>
+        // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
+        var firebaseConfig = {
+            apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
+            authDomain: "book-catalog-39f2b.firebaseapp.com",
+            projectId: "book-catalog-39f2b",
+            storageBucket: "book-catalog-39f2b.appspot.com",
+            messagingSenderId: "610607159158",
+            appId: "1:610607159158:web:dc0050120cac1a0e370c57",
+            measurementId: "G-3M9KWMRPD9"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+  
+        // Initialize Firestore
+        var db = firebase.firestore();
+    </script>
 </body>
 </html>
