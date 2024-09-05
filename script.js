@@ -45,6 +45,16 @@ document.addEventListener('DOMContentLoaded', function () {
      var db = firebase.firestore();
      var auth = firebase.auth(); 
 	
+    // Show login modal
+    loginBtn.addEventListener('click', function() {
+        loginModal.style.display = 'block';
+    });
+
+    // Show register modal
+    registerBtn.addEventListener('click', function() {
+        registerModal.style.display = 'block';
+    });
+	
     // Firebase Auth State Change Listener
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
