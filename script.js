@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteBtn = document.getElementById('delete-book-btn'); // Button for deleting a book
     const bookList = document.getElementById('book-list');
     const searchBar = document.getElementById('search-bar');
+    
+    // Login-specific elements
     const loginForm = document.getElementById('login-form');
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
@@ -23,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
                   .replace(/'/g, '&#039;');
     }
 
-	// Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
-	var firebaseConfig = {
+    // Your web app's Firebase configuration (you should replace this with your actual Firebase configuration)
+    var firebaseConfig = {
 	apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
 	authDomain: "book-catalog-39f2b.firebaseapp.com",
 	projectId: "book-catalog-39f2b",
@@ -33,24 +35,43 @@ document.addEventListener('DOMContentLoaded', function () {
 	appId: "1:610607159158:web:dc0050120cac1a0e370c57",
 	measurementId: "G-3M9KWMRPD9"
      };
+	
      // Initialize Firebase
      firebase.initializeApp(firebaseConfig);
   
-     // Initialize Firestore and Auth
+     // Initialize Firestore
      var db = firebase.firestore();
-     var auth = firebase.auth(); 
 	
-    // Show login modal
+    // Firebase configuration (replace with your actual Firebase config)
+    var firebaseConfig = {
+        apiKey: "AIzaSyBxt2-O5UdOmmyvAbk3_LVRP7ulGvJOGoM",
+        authDomain: "book-catalog-39f2b.firebaseapp.com",
+        projectId: "book-catalog-39f2b",
+        storageBucket: "book-catalog-39f2b.appspot.com",
+        messagingSenderId: "610607159158",
+        appId: "1:610607159158:web:dc0050120cac1a0e370c57",
+        measurementId: "G-3M9KWMRPD9"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized: ", firebase);
+    
+    // Initialize Firestore and Auth
+    var db = firebase.firestore();
+    var auth = firebase.auth(); 
+
+    // Show login modal when the "Login" button is clicked
     loginBtn.addEventListener('click', function() {
         loginModal.style.display = 'block';
-	console.log("Login button clicked, modal opened");
+        console.log("Login button clicked, modal opened");
     });
 
     // Firebase Auth State Change Listener
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             console.log('User logged in: ', user.email);
-            // Hide login/register, show logout and load books
+            // Hide login, show logout, and load books
             loginBtn.style.display = 'none';
             logoutBtn.style.display = 'inline';
             loadBooks(); // Only load books if logged in
@@ -65,22 +86,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Handle Login Form Submission
     loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
 
-    console.log("Attempting to log in with email: ", email);
+        console.log("Attempting to log in with email: ", email);
 
-    firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            console.log('Logged in successfully');
-            loginModal.style.display = 'none'; // Close the login modal
-        })
-        .catch((error) => {
-            console.error('Login failed: ', error.message);
-        });
-});
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                console.log('Logged in successfully');
+                loginModal.style.display = 'none'; // Close the login modal
+            })
+            .catch((error) => {
+                console.error('Login failed: ', error.message);
+            });
+    });
 
     // Handle Logout
     logoutBtn.addEventListener('click', function() {
@@ -91,13 +111,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Close login modal if clicked outside of them (optional)
+    // Close login modal if clicked outside of it (optional)
     window.addEventListener('click', function(event) {
         if (event.target == loginModal) {
             loginModal.style.display = 'none';
         }
     });
-});
 
     // Function to load books from Firestore
     function loadBooks() {
@@ -262,4 +281,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial load of books from Firestore
     loadBooks();
-);
+});
